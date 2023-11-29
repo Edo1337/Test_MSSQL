@@ -53,7 +53,7 @@ namespace Test_MSSQL
         private void button2_Click(object sender, EventArgs e)
         {
             SqlDataAdapter dataAdapter = new SqlDataAdapter(
-                textBox6.Text,
+                ("SELECT * FROM " + textBox6.Text),
                 sqlConnection);
 
             DataSet dataSet = new DataSet();
@@ -66,6 +66,45 @@ namespace Test_MSSQL
         private void textBox6_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            listView1.Items.Clear();
+            
+            SqlDataReader dataReader = null;
+
+            try
+            {
+                SqlCommand sqlCommand = new SqlCommand("Select ProductName, QuantityPerUnit, UnitPrice FROM Products", sqlConnection);
+            
+                dataReader = sqlCommand.ExecuteReader();
+
+                ListViewItem listViewItem = null;
+
+                while (dataReader.Read())
+                {
+                    listViewItem = new ListViewItem(new string[] { 
+                        Convert.ToString(dataReader["ProductName"]),
+                        Convert.ToString(dataReader["QuantityPerUnit"]),
+                        Convert.ToString(dataReader["UnitPrice"])
+                    });
+
+                    listView1.Items.Add(listViewItem);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                throw;
+            }
+            finally
+            {
+                if (dataReader != null && !dataReader.IsClosed)
+                {
+                    dataReader.Close();
+                }
+            }
         }
     }
 }
